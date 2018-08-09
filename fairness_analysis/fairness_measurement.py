@@ -46,24 +46,6 @@ class InequalityFeatureSet:
 
 class _InequalityDecomposer:
 
-    def __init__(self):
-        return
-
-    def __gini_coefficient(self, values: Iterable) -> float:
-        gini_numerator = np.sum( np.sum(np.abs(values - val)) for val in values )
-        gini_denominator = 2 * len(values) * np.sum(values)
-        return gini_numerator / gini_denominator
-
-    def __theil_index(self, values: Iterable, adjust_for_neg: bool = False) -> float:
-        mean = np.mean(values)
-
-        values = [abs(v) + (abs(mean) if v * mean < 0 else 0) for v in values]
-        mean = abs(mean)
-
-        theil = sum((v / mean * np.log(v / mean) if v != 0 \
-                else 0.) for v in values)
-        return theil / len(values)
-
     def __ge_2_index(self, values: Iterable, alpha: float) -> float:
         mean = np.mean(values)
         if mean == 0:
