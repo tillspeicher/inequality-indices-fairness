@@ -105,30 +105,3 @@ class _InequalityDecomposer:
             'unweighted_inequalities': unweighted_inequalities,
             'intergroup_components': intergroup_components
         }
-
-    def __rank_between_group_inequality(self, benefits: Iterable, feature_groups: Iterable) -> Dict:
-        """
-        Ranks features based on the between-group inequality in the
-        benefit distribution that they cause when the population
-        is split according to them.
-
-        Takes as arguments
-        - the benefits for the entire population
-        - a mapping from feature names to mappings from feature values to users that have the corresponding value, as numpy index or boolean arrays
-
-        Returns
-        - the feature names ranked by between-group inequality in ascending order
-        - the between-group inequality for each feature
-        - the within-group inequality for each value of each feature
-        """
-
-        feature_intergroup_inequalities = {}
-        feature_withingroup_inequalities = {}
-        for fname, groups in feature_groups.items():
-            group_benefits = {gname: benefits[group] for gname, group in groups.items()}
-            inequality_decomp = decompose_inequality(group_benefits)
-            feature_intergroup_inequalities[fname] = inequality_decomp['between_ineq']
-            feature_withingroup_inequalities[fname] = inequality_decomp['within_ineqs']
-
-        ranked_features = sorted(feature_intergroup_inequalities, key=feature_intergroup_inequalities.get)
-        return ranked_features, feature_intergroup_inequalities, feature_withingroup_inequalities
