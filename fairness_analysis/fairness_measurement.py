@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import math
 from itertools import product
 from typing import Dict
@@ -15,6 +16,13 @@ class InequalityFeatureSet:
             self.__features_from_dict(data)
         else:
             raise ValueError("Trying to pass unsupported data type '{}' to an InequalityFeatureSet instance".format(type(data)))
+            
+        self.__decompose()
+    
+    def __decompose(self):
+        inequality_decomposer = _InequalityDecomposer()
+        for feature, attributes in self.__feature_set.items():
+            print("[{}] {}".format(feature, inequality_decomposer.decompose(attributes)))
     
     def __features_from_df(self, dataframe):
         if len(dataframe.columns) != len(set(dataframe.columns)):
@@ -36,7 +44,7 @@ class InequalityFeatureSet:
         
         self.__feature_set = dictionary
 
-class InequalityDecomposer:
+class _InequalityDecomposer:
 
     def __init__(self):
         return
