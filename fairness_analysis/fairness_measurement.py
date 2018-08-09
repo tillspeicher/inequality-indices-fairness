@@ -4,6 +4,41 @@ from itertools import product
 from typing import Dict
 from collections import Iterable
 
+class InequalityFeatureSet:
+    
+    __feature_set = None
+    
+    def __init__(self, data):
+        if isinstance(data, pd.DataFrame):
+            self.__features_from_df(data)
+        elif isinstance(data, dict):
+            self.__features_from_dict(data)
+        else:
+            raise ValueError("Trying to pass unsupported data type '{}' to an InequalityFeatureSet instance".format(type(data)))
+    
+    def get_fs(self):
+        return self.__feature_set
+    
+    def __features_from_df(self, dataframe):
+        if len(dataframe.columns) != len(set(dataframe.columns)):
+            raise ValueError("Trying to pass DataFrame with duplicate columns to an InequalityFeatureSet instance")
+        if 'benefit' not in dataframe.columns:
+            raise ValueError("Trying to pass DataFrame without a 'benefit' column to an InequalityFeatureSet instance")
+            
+        self.__feature_set = {
+            feature: dataframe.groupby(feature)['benefit'].agg(list).to_dict() for feature in dataframe.columns if feature != 'benefit'
+        }
+        
+    def __features_from_dict(self, dictionary):
+        if not all(isinstance(feature, str) for feature in dictionary.keys()):
+            raise ValueError("Trying to pass non-string-formatted feature labels to and InequalityFeatureSet instance")
+        if not all(isinstance(attributes, dict) for attributes in dictionary.values()):
+            raise ValueError("Trying to pass non-dictionary-formatted feature attributes to an InequalityFeatureSet instance")
+        if not all(all(isinstance(attribute_label, str) and isinstance(attribute_benefits, Iterable) for attribute_label, attribute_benefits in attributes.items()) for attributes in dictionary.values()):
+            raise ValueError("Trying to pass ill-formatted attribute benefits to an InequalityFeatureSet instance")
+        
+        self.__feature_set = dictionary
+
 class InequalityDecomposer:
 
     def __init__(self):
