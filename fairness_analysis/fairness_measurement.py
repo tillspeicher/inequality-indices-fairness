@@ -2,14 +2,15 @@ import numpy as np
 import pandas as pd
 import math
 from itertools import product
-from typing import Dict
+from typing import Dict, TypeVar
 from collections import Iterable
 
 class InequalityFeatureSet:
     
+    __T = TypeVar('__T', pd.DataFrame, dict)
     __feature_set = None
     
-    def __init__(self, data):
+    def __init__(self, data: __T):
         if isinstance(data, pd.DataFrame):
             self.__features_from_df(data)
         elif isinstance(data, dict):
@@ -24,7 +25,7 @@ class InequalityFeatureSet:
         for feature, attributes in self.__feature_set.items():
             print("[{}] {}".format(feature, inequality_decomposer.run(attributes)))
     
-    def __features_from_df(self, dataframe):
+    def __features_from_df(self, dataframe: pd.DataFrame) -> None:
         if len(dataframe.columns) != len(set(dataframe.columns)):
             raise ValueError("Trying to pass DataFrame with duplicate columns to an InequalityFeatureSet instance")
         if 'benefit' not in dataframe.columns:
@@ -34,7 +35,7 @@ class InequalityFeatureSet:
             feature: dataframe.groupby(feature)['benefit'].agg(list).to_dict() for feature in dataframe.columns if feature != 'benefit'
         }
         
-    def __features_from_dict(self, dictionary):
+    def __features_from_dict(self, dictionary: Dict) -> None:
         if not all(isinstance(feature, str) for feature in dictionary.keys()):
             raise ValueError("Trying to pass non-string-formatted feature labels to and InequalityFeatureSet instance")
         if not all(isinstance(attributes, dict) for attributes in dictionary.values()):
