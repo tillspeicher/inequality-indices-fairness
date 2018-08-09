@@ -176,7 +176,7 @@ class _InequalityDecomposer:
             'unweighted intermediate components')
         '''
         if (alpha == 0) or (alpha == 1):
-            raise ValueError("Trying to assing a special-case value of '{}' to alpha")
+            raise ValueError("Trying to assing a special-case value of '{}' to alpha".format(alpha))
             
         overall_benefits = np.concatenate(list(group_benefits.values()))
         overall_ineq = self.__ge_index(overall_benefits, alpha)
