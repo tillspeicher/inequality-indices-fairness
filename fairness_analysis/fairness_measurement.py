@@ -58,7 +58,7 @@ class InequalityDecomposer:
             means_sqr = np.power(sub_mean_util / mean_util, alpha)
             sub_inequality_weight = (len(g_benefits) / len(overall_benefits)) * means_sqr
 
-            sub_inequality = ge_2_index(g_benefits)
+            sub_inequality = self.__ge_2_index(g_benefits, alpha)
             sub_inequalities[group] = sub_inequality_weight * sub_inequality
             unweighted_inequalities[group] = sub_inequality
 
