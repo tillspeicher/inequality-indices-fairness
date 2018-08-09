@@ -99,10 +99,10 @@ class _InequalityDecomposer:
         assert math.isclose(overall_ineq, decomposition_sum, rel_tol=0.1), "overall inequality {} and decomposition sum {} not close".format(overall_ineq, decomposition_sum)
 
         return {
-            'overall_ineq': overall_ineq,
-            'between_ineq': intergroup_inequality,
-            'within_ineqs': sub_inequalities,
-            'unweighted_ineqs': unweighted_inequalities,
+            'overall_inequality': overall_ineq,
+            'between_group_inequality': intergroup_inequality,
+            'within_group_inequalities': sub_inequalities,
+            'unweighted_inequalities': unweighted_inequalities,
             'intergroup_components': intergroup_components
         }
 
