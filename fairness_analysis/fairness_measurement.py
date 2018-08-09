@@ -22,7 +22,7 @@ class InequalityFeatureSet:
     def __decompose(self):
         inequality_decomposer = _InequalityDecomposer()
         for feature, attributes in self.__feature_set.items():
-            print("[{}] {}".format(feature, inequality_decomposer.decompose(attributes)))
+            print("[{}] {}".format(feature, inequality_decomposer.run(attributes)))
     
     def __features_from_df(self, dataframe):
         if len(dataframe.columns) != len(set(dataframe.columns)):
@@ -55,7 +55,7 @@ class _InequalityDecomposer:
         ge_2 /= (len(values) * alpha * (alpha - 1))
         return ge_2
 
-    def decompose(self, group_benefits: Dict[str, Iterable], alpha: float = 2.0) -> Dict:
+    def run(self, group_benefits: Dict[str, Iterable], alpha: float = 2.0) -> Dict:
         """
         Expects the benefits for each member of each group as a mapping
         of the form {'<group_name>': [benefit_user_1, benefit_user_2, ...]}
