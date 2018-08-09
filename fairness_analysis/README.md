@@ -6,7 +6,7 @@ This module was created to automate the process of performing *inequality decomp
 
 ### 0. Ad-hoc
 
-If nothing else, just take the snippet below and change it to your own taste and data. If you don't like to read, then this sample should guide you through our module but if that's not the case, five minutes is all we need to show you how it works (and you can simply skip to the next section).
+If nothing else, just take the snippet below and change it to your own taste and data. If you don't like to read, then this sample should guide you through our module! If that's not the case, however, five minutes is all we need to show you how it works (and you can simply skip to the next section).
 
 ```python
 # Importing the only necessary class (InequalityFeatureSet)
