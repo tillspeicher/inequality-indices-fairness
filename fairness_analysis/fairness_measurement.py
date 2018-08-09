@@ -1,17 +1,39 @@
+import math
 import numpy as np
 import pandas as pd
-import math
 from itertools import product
-from typing import Dict, Any, Callable, TypeVar
 from collections import Iterable
+from typing import Dict, Any, Callable, TypeVar
 
 class InequalityFeatureSet:
-    
+    '''
+    This class is responsible for calculating and formatting
+    the inequality decomposition of a set of user-defined
+    features.
+    '''
+
     __T = TypeVar('__T', pd.DataFrame, dict)
     __feature_set = None
     __feature_set_decomposition = None
     
     def __init__(self, data: __T):
+        '''
+        The constructor takes care of initialializing the
+        user-defined feature set in a standardized way, 
+        initiating the decomposition process and storing
+        those intermediate results.
+        
+        Args:
+        data (__T): This parameter will only be valid if it is
+            provided either as a pandas DataFrame (each column
+            containing a categorical variable and an extra 
+            column named 'benefit', with a pre-calculated
+            benefit for every sample) or as a nested dictionary
+            (in the form of {<feature>:{<attr>:[x1, ..., xn]}},
+            where it can contain as many attributes for each 
+            feature and as many features as provided)
+        '''
+        
         if isinstance(data, pd.DataFrame):
             self.__features_from_df(data)
         elif isinstance(data, dict):
@@ -22,6 +44,19 @@ class InequalityFeatureSet:
         self.__decompose()
     
     def get_decomposition(self, formatter: Callable = None) -> Any:
+        '''
+        This method returns an (otionally formatted) inequality
+        decomposition for a set of user-defined features.
+        
+        Args:
+        formatter (Callable): User-defined function to customize
+            the format of the default decomposition dictionary
+            
+        Returns:
+        Any: By default it will return a dictionary but, if provided
+            a custom formatter, it can return any type of object
+        '''
+        
         if formatter is None:
             return self.__feature_set_decomposition
         elif not callable(formatter):
@@ -29,12 +64,28 @@ class InequalityFeatureSet:
         return formatter(self.__feature_set_decomposition)
     
     def __decompose(self) -> None:
+        '''
+        This method takes care of calculating the specified features'
+        inequality decomposition and storing the final results on
+        a private variable.
+        '''
+        
         inequality_decomposer = _InequalityDecomposer()
         self.__feature_set_decomposition = {
             feature: inequality_decomposer.run(attributes) for feature, attributes in self.__feature_set.items()
         }
     
     def __features_from_df(self, dataframe: pd.DataFrame) -> None:
+        '''
+        This method handles standardization of features formatted
+        as pandas DataFrames.
+        
+        Args:
+        dataframe (pd.DataFrame): dataframe-formatted features, without
+            duplicate columns and with a compulsory column named 'benefit'
+            (containing pre-calculated benefits for every sample)
+        '''
+        
         if len(dataframe.columns) != len(set(dataframe.columns)):
             raise ValueError("Trying to pass DataFrame with duplicate columns to an InequalityFeatureSet instance")
         if 'benefit' not in dataframe.columns:
@@ -45,6 +96,17 @@ class InequalityFeatureSet:
         }
         
     def __features_from_dict(self, dictionary: Dict) -> None:
+        '''
+        This method handles standardization of features formatted
+        as nested dictionaries.
+        
+        Args:
+        dictionary (Dict): nested dictionary of features, in the form
+            of {<feature>:{<attr>:[x1, ..., xn]}}, where there can be
+            as many attributes and features as necessary (to accomodate
+            for multiple features and multi-dimentional benefits)
+        '''
+        
         if not all(isinstance(feature, str) for feature in dictionary.keys()):
             raise ValueError("Trying to pass non-string-formatted feature labels to and InequalityFeatureSet instance")
         if not all(isinstance(attributes, dict) for attributes in dictionary.values()):
@@ -55,8 +117,20 @@ class InequalityFeatureSet:
         self.__feature_set = dictionary
 
 class _InequalityDecomposer:
-
+    '''
+    This class is private and not meant to be imported
+    by the end user. It should only be called by an
+    InequalityFeatureSet object instance to perform
+    inequality decomposition of a feature.
+    '''
+    
     def __ge_2_index(self, values: Iterable, alpha: float) -> float:
+        '''
+        This method calculates the generalized entropy
+        index, as mentioned in the KDD published paper 
+        (https://arxiv.org/abs/1807.00787).
+        '''
+        
         mean = np.mean(values)
         if mean == 0:
             print("Warning: 0 benefit mean in GE_2 computation")
@@ -66,17 +140,27 @@ class _InequalityDecomposer:
         return ge_2
 
     def run(self, group_benefits: Dict[str, Iterable], alpha: float = 2.0) -> Dict:
-        """
-        Expects the benefits for each member of each group as a mapping
-        of the form {'<group_name>': [benefit_user_1, benefit_user_2, ...]}
-
-        Computes the decomposition of population benefits for the GE_2 index (which is subgroup-decomposable) into
-        - overall inequality
-        - between-group inequality
-        - within-group inequality for each group as a mapping
-            {'<group_name>': within-group inequality})
-        - unweighted intermediate components
-        """
+        '''
+        This method can be called to calculate and return
+        the decomposition for a given feature.
+        
+        Args:
+        group_benefits (Dict[str, Iterable]): Dictionary
+            in the form {<attr>:[x1, ..., xn]}, wehere an
+            attribute represent a group's label and its
+            values represent each of its samples' benefit
+        alpha (float): Hyperparameter for calculating the
+            inequality decomposition for a given group
+            (by default will have a value of 2)
+            
+        Returns:
+        Dict: Dictionary containing all the necessary data
+            regarding the decomposition process (both the 
+            overall indices and group-wise calculations, 
+            such as 'overall inequality', 'between-group
+            inequality', 'within-group inequality' and
+            'unweighted intermediate components')
+        '''
         overall_benefits = np.concatenate(list(group_benefits.values()))
         overall_ineq = self.__ge_2_index(overall_benefits, alpha)
         mean_util = np.mean(overall_benefits)
