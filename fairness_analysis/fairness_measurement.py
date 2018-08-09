@@ -1,4 +1,5 @@
 import math
+import warnings
 import numpy as np
 import pandas as pd
 from itertools import product
@@ -133,7 +134,7 @@ class _InequalityDecomposer:
         
         mean = np.mean(values)
         if mean == 0:
-            print("Warning: 0 benefit mean in GE_2 computation")
+            warnings.warn("0 benefit mean in GE_2 computation")
             return 0.
         ge_2 = np.sum(np.power(values / mean, alpha) - 1)
         ge_2 /= (len(values) * alpha * (alpha - 1))
