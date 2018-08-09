@@ -1,18 +1,22 @@
 import numpy as np
 import math
 from itertools import product
+from typing import Dict
+from collections import Iterable
 
 class InequalityDecomposer:
 
     def __init__(self):
         return
 
-    def __gini_coefficient(values):
+    @typechecked
+    def __gini_coefficient(values: Iterable) -> float:
         gini_numerator = np.sum( np.sum(np.abs(values - val)) for val in values )
         gini_denominator = 2 * len(values) * np.sum(values)
         return gini_numerator / gini_denominator
 
-    def __theil_index(values, adjust_for_neg=False):
+    @typechecked
+    def __theil_index(values: Iterable, adjust_for_neg: bool = False) -> float:
         mean = np.mean(values)
 
         values = [abs(v) + (abs(mean) if v * mean < 0 else 0) for v in values]
@@ -22,7 +26,8 @@ class InequalityDecomposer:
                 else 0.) for v in values)
         return theil / len(values)
 
-    def __ge_2_index(values, alpha):
+    @typechecked
+    def __ge_2_index(values: Iterable, alpha: float) -> float:
         mean = np.mean(values)
         if mean == 0:
             print("Warning: 0 benefit mean in GE_2 computation")
@@ -31,7 +36,8 @@ class InequalityDecomposer:
         ge_2 /= (len(values) * alpha * (alpha - 1))
         return ge_2
 
-    def decompose(group_benefits, alpha=2):
+    @typechecked
+    def decompose(group_benefits: Dict[str, Iterable], alpha: float = 2.0) -> Dict:
         """
         Expects the benefits for each member of each group as a mapping
         of the form {'<group_name>': [benefit_user_1, benefit_user_2, ...]}
@@ -74,7 +80,8 @@ class InequalityDecomposer:
                 'unweighted_ineqs': unweighted_inequalities,
                 'intergroup_components': intergroup_components}
 
-    def __rank_between_group_inequality(benefits, feature_groups):
+    @typechecked
+    def __rank_between_group_inequality(benefits: Iterable, feature_groups: Iterable) -> Dict:
         """
         Ranks features based on the between-group inequality in the
         benefit distribution that they cause when the population
