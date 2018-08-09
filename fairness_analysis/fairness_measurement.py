@@ -9,6 +9,7 @@ class InequalityFeatureSet:
     
     __T = TypeVar('__T', pd.DataFrame, dict)
     __feature_set = None
+    __feature_set_decomposition = None
     
     def __init__(self, data: __T):
         if isinstance(data, pd.DataFrame):
@@ -20,10 +21,14 @@ class InequalityFeatureSet:
             
         self.__decompose()
     
-    def __decompose(self):
+    def get_decomposition(self) -> Dict:
+        return self.__feature_set_decomposition
+    
+    def __decompose(self) -> None:
         inequality_decomposer = _InequalityDecomposer()
-        for feature, attributes in self.__feature_set.items():
-            print("[{}] {}".format(feature, inequality_decomposer.run(attributes)))
+        self.__feature_set_decomposition = {
+            feature: inequality_decomposer.run(attributes) for feature, attributes in self.__feature_set.items()
+        }
     
     def __features_from_df(self, dataframe: pd.DataFrame) -> None:
         if len(dataframe.columns) != len(set(dataframe.columns)):
