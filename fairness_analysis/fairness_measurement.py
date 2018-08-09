@@ -8,14 +8,12 @@ class InequalityDecomposer:
 
     def __init__(self):
         return
-
-    @typechecked
+        
     def __gini_coefficient(self, values: Iterable) -> float:
         gini_numerator = np.sum( np.sum(np.abs(values - val)) for val in values )
         gini_denominator = 2 * len(values) * np.sum(values)
         return gini_numerator / gini_denominator
 
-    @typechecked
     def __theil_index(self, values: Iterable, adjust_for_neg: bool = False) -> float:
         mean = np.mean(values)
 
@@ -26,7 +24,6 @@ class InequalityDecomposer:
                 else 0.) for v in values)
         return theil / len(values)
 
-    @typechecked
     def __ge_2_index(self, values: Iterable, alpha: float) -> float:
         mean = np.mean(values)
         if mean == 0:
@@ -36,7 +33,6 @@ class InequalityDecomposer:
         ge_2 /= (len(values) * alpha * (alpha - 1))
         return ge_2
 
-    @typechecked
     def decompose(self, group_benefits: Dict[str, Iterable], alpha: float = 2.0) -> Dict:
         """
         Expects the benefits for each member of each group as a mapping
@@ -82,7 +78,6 @@ class InequalityDecomposer:
             'intergroup_components': intergroup_components
         }
 
-    @typechecked
     def __rank_between_group_inequality(self, benefits: Iterable, feature_groups: Iterable) -> Dict:
         """
         Ranks features based on the between-group inequality in the
