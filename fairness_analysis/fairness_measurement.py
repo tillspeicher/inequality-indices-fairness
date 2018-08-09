@@ -125,7 +125,7 @@ class _InequalityDecomposer:
     inequality decomposition of a feature.
     '''
     
-    def __ge_2_index(self, values: Iterable, alpha: float) -> float:
+    def __ge_index(self, values: Iterable, alpha: float) -> float:
         '''
         This method calculates the generalized entropy
         index, as mentioned in the KDD published paper 
@@ -163,7 +163,7 @@ class _InequalityDecomposer:
             'unweighted intermediate components')
         '''
         overall_benefits = np.concatenate(list(group_benefits.values()))
-        overall_ineq = self.__ge_2_index(overall_benefits, alpha)
+        overall_ineq = self.__ge_index(overall_benefits, alpha)
         mean_util = np.mean(overall_benefits)
 
         sub_inequalities = {}
@@ -175,7 +175,7 @@ class _InequalityDecomposer:
             means_sqr = np.power(sub_mean_util / mean_util, alpha)
             sub_inequality_weight = (len(g_benefits) / len(overall_benefits)) * means_sqr
 
-            sub_inequality = self.__ge_2_index(g_benefits, alpha)
+            sub_inequality = self.__ge_index(g_benefits, alpha)
             sub_inequalities[group] = sub_inequality_weight * sub_inequality
             unweighted_inequalities[group] = sub_inequality
 
