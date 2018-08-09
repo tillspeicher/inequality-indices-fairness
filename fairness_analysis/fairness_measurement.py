@@ -50,7 +50,7 @@ class InequalityDecomposer:
         - unweighted intermediate components
         """
         overall_benefits = np.concatenate(list(group_benefits.values()))
-        overall_ineq = ge_2_index(overall_benefits)
+        overall_ineq = self.__ge_2_index(overall_benefits)
         mean_util = np.mean(overall_benefits)
 
         sub_inequalities = {}
