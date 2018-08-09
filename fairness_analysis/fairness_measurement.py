@@ -135,10 +135,22 @@ class _InequalityDecomposer:
         mean = np.mean(values)
         if mean == 0:
             warnings.warn("0 benefit mean in GE_2 computation")
-            return 0.
-        ge_2 = np.sum(np.power(values / mean, alpha) - 1)
-        ge_2 /= (len(values) * alpha * (alpha - 1))
-        return ge_2
+            return 0
+        
+        # Handling special cases for GE
+        ge = None
+        if alpha == 0:
+            warnings.warn("Alpha parameter is set to 0, falling into special case of general entropy calculation")
+            ge = np.sum(np.log(values / mean))
+            ge /= -len(values)
+        elif alpha == 1:
+            warnings.warn("Alpha parameter is set to 1, falling into special case of general entropy calculation")
+            ge = np.sum((values / mean) * np.log(values / mean))
+            ge /= len(values)
+        else:
+            ge = np.sum(np.power(values / mean, alpha) - 1)
+            ge /= (len(values) * alpha * (alpha - 1))
+        return ge
 
     def run(self, group_benefits: Dict[str, Iterable], alpha: float = 2.0) -> Dict:
         '''
