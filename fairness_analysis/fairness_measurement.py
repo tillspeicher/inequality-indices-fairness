@@ -74,11 +74,13 @@ class InequalityDecomposer:
         decomposition_sum = sum(sub_inequalities.values()) + intergroup_inequality
         assert math.isclose(overall_ineq, decomposition_sum, rel_tol=0.1), "overall inequality {} and decomposition sum {} not close".format(overall_ineq, decomposition_sum)
 
-        return {'overall_ineq': overall_ineq,
-                'between_ineq': intergroup_inequality,
-                'within_ineqs': sub_inequalities,
-                'unweighted_ineqs': unweighted_inequalities,
-                'intergroup_components': intergroup_components}
+        return {
+            'overall_ineq': overall_ineq,
+            'between_ineq': intergroup_inequality,
+            'within_ineqs': sub_inequalities,
+            'unweighted_ineqs': unweighted_inequalities,
+            'intergroup_components': intergroup_components
+        }
 
     @typechecked
     def __rank_between_group_inequality(benefits: Iterable, feature_groups: Iterable) -> Dict:
