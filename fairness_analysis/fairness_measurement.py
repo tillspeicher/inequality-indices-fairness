@@ -22,16 +22,16 @@ class InequalityDecomposer:
                 else 0.) for v in values)
         return theil / len(values)
 
-    def __ge_2_index(values):
+    def __ge_2_index(values, alpha):
         mean = np.mean(values)
         if mean == 0:
             print("Warning: 0 benefit mean in GE_2 computation")
             return 0.
-        ge_2 = np.sum(np.square(values / mean) - 1)
-        ge_2 /= (len(values) * 2)
+        ge_2 = np.sum(np.power(values / mean, alpha) - 1)
+        ge_2 /= (len(values) * alpha * (alpha - 1))
         return ge_2
 
-    def decompose(group_benefits):
+    def decompose(group_benefits, alpha=2):
         """
         Expects the benefits for each member of each group as a mapping
         of the form {'<group_name>': [benefit_user_1, benefit_user_2, ...]}
@@ -53,14 +53,14 @@ class InequalityDecomposer:
         intergroup_inequality = 0
         for group, g_benefits in group_benefits.items():
             sub_mean_util = np.mean(g_benefits)
-            means_sqr = np.square(sub_mean_util / mean_util)
+            means_sqr = np.power(sub_mean_util / mean_util, alpha)
             sub_inequality_weight = (len(g_benefits) / len(overall_benefits)) * means_sqr
 
             sub_inequality = ge_2_index(g_benefits)
             sub_inequalities[group] = sub_inequality_weight * sub_inequality
             unweighted_inequalities[group] = sub_inequality
 
-            intergroup_component = len(g_benefits) / (2 * len(overall_benefits)) * \
+            intergroup_component = len(g_benefits) / (len(overall_benefits) * alpha * (alpha - 1)) * \
                     (means_sqr - 1)
             intergroup_inequality += intergroup_component
             intergroup_components[group] = intergroup_component
