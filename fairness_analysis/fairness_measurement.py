@@ -8,7 +8,7 @@ class InequalityDecomposer:
 
     def __init__(self):
         return
-        
+
     def __gini_coefficient(self, values: Iterable) -> float:
         gini_numerator = np.sum( np.sum(np.abs(values - val)) for val in values )
         gini_denominator = 2 * len(values) * np.sum(values)
@@ -46,7 +46,7 @@ class InequalityDecomposer:
         - unweighted intermediate components
         """
         overall_benefits = np.concatenate(list(group_benefits.values()))
-        overall_ineq = self.__ge_2_index(overall_benefits)
+        overall_ineq = self.__ge_2_index(overall_benefits, alpha)
         mean_util = np.mean(overall_benefits)
 
         sub_inequalities = {}
