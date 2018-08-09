@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import math
 from itertools import product
-from typing import Dict, TypeVar
+from typing import Dict, Any, TypeVar
 from collections import Iterable
 
 class InequalityFeatureSet:
@@ -21,8 +21,12 @@ class InequalityFeatureSet:
             
         self.__decompose()
     
-    def get_decomposition(self) -> Dict:
-        return self.__feature_set_decomposition
+    def get_decomposition(self, formatter = None) -> Any:
+        if formatter is None:
+            return self.__feature_set_decomposition
+        elif not callable(formatter):
+            raise ValueError("Trying to pass a non-callable formatter to an InequalityFeatureSet isntance")
+        return formatter(self.__feature_set_decomposition)
     
     def __decompose(self) -> None:
         inequality_decomposer = _InequalityDecomposer()
