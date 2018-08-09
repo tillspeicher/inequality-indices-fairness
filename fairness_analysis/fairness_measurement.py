@@ -16,9 +16,6 @@ class InequalityFeatureSet:
         else:
             raise ValueError("Trying to pass unsupported data type '{}' to an InequalityFeatureSet instance".format(type(data)))
     
-    def get_fs(self):
-        return self.__feature_set
-    
     def __features_from_df(self, dataframe):
         if len(dataframe.columns) != len(set(dataframe.columns)):
             raise ValueError("Trying to pass DataFrame with duplicate columns to an InequalityFeatureSet instance")
