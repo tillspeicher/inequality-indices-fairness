@@ -164,7 +164,8 @@ class _InequalityDecomposer:
             values represent each of its samples' benefit
         alpha (float): Hyperparameter for calculating the
             inequality decomposition for a given group
-            (by default will have a value of 2)
+            (by default will have a value of 2). This 
+            parameter should not take the values 0 or 1
             
         Returns:
         Dict: Dictionary containing all the necessary data
@@ -174,6 +175,9 @@ class _InequalityDecomposer:
             inequality', 'within-group inequality' and
             'unweighted intermediate components')
         '''
+        if (alpha == 0) or (alpha == 1):
+            raise ValueError("Trying to assing a special-case value of '{}' to alpha")
+            
         overall_benefits = np.concatenate(list(group_benefits.values()))
         overall_ineq = self.__ge_index(overall_benefits, alpha)
         mean_util = np.mean(overall_benefits)
